@@ -1,0 +1,41 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: easylife-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+      routes:
+        - id: mail-invitation
+          uri: lb://adherent-service
+          predicates:
+            - Path=/activate/mail-invitation
+            - Method=POST
+
+
+        - id: verification
+          uri: lb://adherent-service
+          predicates:
+            - Path=/activate/verification
+            - Method=GET
+
+
+      discovery:
+        locator:
+          lower-case-service-id: true
+          enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8671/eureka
