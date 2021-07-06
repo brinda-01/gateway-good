@@ -1,14 +1,24 @@
 server:
-  port: 8084
+  port: 8005
 spring:
   application:
     name: easylife-gateway
   cloud:
     gateway:
+#      filter:
+#       - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
         cors-configurations:
           '[/**]':
             allowedOrigins: "*"
+            allowedCredentials: true
+            allowedHeaders:
+              - X-Requested-With
+              - Origin
+              - Content-Type
+              - Accept
+              - Authorization
+              - expired_date
             allowedMethods:
               - GET
               - POST
@@ -16,6 +26,11 @@ spring:
               - DELETE
               - PATCH
               - OPTIONS
+            exposedHeaders:
+              - Authorization
+              - expired_date
+
+
       routes:
         - id: mail-invitation
           uri: lb://adherent-service
@@ -29,6 +44,35 @@ spring:
           predicates:
             - Path=/activate/verification
             - Method=GET
+
+        - id: login
+          uri: lb://compte-service
+          predicates:
+            - Path=/login
+            - Method=POST
+
+
+
+        - id: createCompte
+          uri: lb://compte-service
+          predicates:
+            - Path=/compte/createcompte
+            - Method=POST
+
+        - id: fordAdherent
+          uri: lb://compte-service
+          predicates:
+            - Path=/compte/compteOfAdherent
+            - Method=GET
+
+        - id: updateSolde
+          uri: lb://compte-service
+          predicates:
+            - Path=/compte/updateSolde
+            - Method=PUT
+
+
+
 
 
       discovery:
